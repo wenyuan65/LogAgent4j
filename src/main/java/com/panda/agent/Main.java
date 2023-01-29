@@ -101,13 +101,13 @@ public class Main {
 
         // 处理历史日志文件
         for (FileAgent fileAgent : fileAgentList) {
-            Iterator<String> it = historyLogFileCandidateList.iterator();
-            while (it.hasNext()) {
-                String historyLogFilePath = it.next();
-                if (fileAgent.addHistoryLogFile(historyLogFilePath)) {
-                    it.remove();
-                }
-            }
+//            Iterator<String> it = historyLogFileCandidateList.iterator();
+//            while (it.hasNext()) {
+//                String historyLogFilePath = it.next();
+//                if (fileAgent.addHistoryLogFile(historyLogFilePath)) {
+//                    it.remove();
+//                }
+//            }
 
             AgentManager.getInstance().addAgent(fileAgent);
         }

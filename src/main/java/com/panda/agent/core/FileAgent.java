@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class FileAgent {
 
@@ -47,24 +48,28 @@ public class FileAgent {
 
     public void init(FileAgentCachedConfig config) {
         this.eventTranslator = new LogEventTranslator(game, serverName);
-        // 历史日志文件排序
-        Collections.sort(historyFilePathList);
+//        // 历史日志文件排序
+//        if (historyFilePathList.size() > 1) {
+//            Collections.sort(historyFilePathList);
+//        }
 
         if (config != null) {
             this.pos = config.getPos();
             this.timestamp = new Date(config.getTime());
-
-            // 存在历史读取记录的，将
-            String oldFileName = namingStrategy.getName(filePath, timestamp);
-        } else {
-            // 没有历史记录，全部重新读
-
         }
 
-        //TODO: 读取历史日志文件
+//        // 读取历史日志文件,若存在历史读取记录的，将日志文件
+//        int index = -1;
+//        String oldFileName = namingStrategy.getName(filePath, timestamp);
+//        for (int i = 0; i < historyFilePathList.size(); i++) {
+//            String historyLogFilePath = historyFilePathList.get(i);
+//            if (oldFileName.equalsIgnoreCase(historyLogFilePath)) {
+//                index = i;
+//                break;
+//            }
+//        }
 
-
-        log.info("register file agent using cached config, path:{}, pos:{}, timestamp:{}, serverName:{}, game:{}", this.getFilePath(), this.getPos(), this.getTimestamp(), this.serverName, this.getGame());
+        log.info("register file agent using cached config, path:{}, pos:{}, timestamp:{}, game:{}, serverName:{}", this.getFilePath(), this.getPos(), this.getTimestamp(), this.getGame(), this.serverName);
     }
 
     public boolean addHistoryLogFile(String historyLogFilePath) {
@@ -88,8 +93,8 @@ public class FileAgent {
 
         boolean canReadNextTime = doReadFile(oldFileName, limit * 100, true);
         if (!canReadNextTime) {
-            // 下一次不可以继续读的话，说明文件已经读取完了
-            this.timestamp = now;
+            // 下一次不可以继续读的话，说明文件已经读取完了,继续读下一天的文件
+            this.timestamp = new Date(timestamp.getTime() + TimeUnit.DAYS.toMillis(1));
             this.pos = 0;
 
             log.info("switch to next day, reset data as new day, {}", filePath);
