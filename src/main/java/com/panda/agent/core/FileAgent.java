@@ -89,7 +89,7 @@ public class FileAgent {
 
         // 日志在进入下一天的时候，可能重新命名，需要读取所有新剩余日志
         String oldFileName = namingStrategy.getName(filePath, timestamp);
-        log.info("switching to next day, read leftover content for {} with modified file name: {}", filePath, oldFileName);
+        log.info("switching to next day, read left content for {} with modified file name: {}", filePath, oldFileName);
 
         boolean canReadNextTime = doReadFile(oldFileName, limit * 100, true);
         if (!canReadNextTime) {
@@ -129,6 +129,9 @@ public class FileAgent {
             if (isLastDay || canPrint()) {
                 log.info("read file {}, progress:{} / {}", filePath, this.pos, this.len);
             }
+        } catch (FileNotFoundException e) {
+            // 历史文件不存在的情况下，跳过
+            canReadNextTime = false;
         } catch (Throwable e) {
             e.printStackTrace();
         } finally {
